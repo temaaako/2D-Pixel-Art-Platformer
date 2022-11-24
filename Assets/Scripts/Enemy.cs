@@ -11,6 +11,11 @@ public class Enemy : MonoBehaviour
 
     private Collider2D _platformEndCollider;
 
+    bool IsFacingRight => transform.localScale.x > Mathf.Epsilon;
+
+    [SerializeField] private float _damage = 1f;
+
+    public float GetDamage => _damage;
 
     // Start is called before the first frame update
     void Start()
@@ -29,13 +34,31 @@ public class Enemy : MonoBehaviour
 
     private void Move()
     {
+        if (IsFacingRight)
+        {
+            _rb.velocity = new Vector2(moveSpeed, 0f);
+        }
+        else
+        {
+            _rb.velocity = new Vector2(-moveSpeed, 0f);
+        }
+    }
 
-        _rb.velocity = new Vector2(moveSpeed, 0f);
-        //bool onGround = Physics2D.Raycast(transform.position, Vector2.down, _groundLength, _groundLayer);
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (IsFacingRight)
+        {
+            FlipSprite(-1f);
+        }
+        else
+        {
+            FlipSprite(1f);
+        }
     }
 
     private void FlipSprite(float direction)
     {
+        Debug.Log("Флип");
         transform.localScale = new Vector2(Mathf.Sign(direction), transform.localScale.y);
     }
 }

@@ -3,16 +3,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Windows;
 
 public class Player : MonoBehaviour
 {
     //Config
-    [SerializeField] private float _moveSpeed;
-    [SerializeField] private float _jumpSpeed;
-    [SerializeField] private float _climbSpeed;
+    [SerializeField] private float _moveSpeed = 1f;
+    [SerializeField] private float _jumpSpeed = 1f;
+    [SerializeField] private float _climbSpeed = 1f;
+    [SerializeField] private float _health = 3f;
+    [SerializeField] private float _groundLength = 0.6f;
 
-    //State
-    public bool IsAlive = true;
+
+    //Properties
+    public bool IsAlive => _health > 0f;
+
+    public Action Dead;
 
     //Cached component references
     private Rigidbody2D _rb;
@@ -22,33 +28,28 @@ public class Player : MonoBehaviour
     private Collider2D _collider;
     private float _gravityScaleAtStart;
 
-
-
     [SerializeField] private LayerMask _groundLayer;
     [SerializeField] private LayerMask _ladderLayer;
-    [SerializeField] private float _groundLength = 0.6f;
-    
+    [SerializeField] private Vector2 _deathKick = new Vector2(25f,25f);
     private const string Climnbing = "Climbing";
     private const string Running = "Running";
+    private const string Dying = "Dying";
 
     private void OnEnable()
     {
         _input.Player.Enable();
+        Dead += OnDeath;
     }
     private void OnDisable()
     {
         _input.Player.Disable();
+        Dead -= OnDeath;
     }
 
     private void Awake()
     {
-        
-
-
         _input = new PlayerInput();
         _input.Player.Jump.performed += context => Jump();
-
-
     }
 
     private void Start()
@@ -58,6 +59,20 @@ public class Player : MonoBehaviour
         _collider = GetComponent<Collider2D>();
         _gravityScaleAtStart = _rb.gravityScale;
         
+    }
+
+    public void ApplyDamage(float damage)
+    {
+        if (damage<0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(damage));
+        }
+        _health -= damage;
+        Debug.Log("health "+_health);
+        if (IsAlive == false)
+        {
+            Dead?.Invoke();
+        }
     }
 
 
@@ -113,13 +128,30 @@ public class Player : MonoBehaviour
 
 
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
+
         _direction = _input.Player.Move.ReadValue<Vector2>();
-        Debug.Log(_direction);
         Move(_direction.x);
         ClimbLadder(_direction.y);
-        
+    }
+
+    private void OnDeath()
+    {
+        _input.Disable();
+        _animator.SetTrigger(Dying);
+        _rb.velocity = _deathKick;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Enemy enemy = collision.gameObject.GetComponent<Enemy>();
+
+
+        if ( enemy!=null)
+        {
+            ApplyDamage(enemy.GetDamage);
+        }
     }
 
 
