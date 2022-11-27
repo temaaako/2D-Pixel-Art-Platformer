@@ -63,12 +63,16 @@ public class Player : MonoBehaviour
 
     public void ApplyDamage(float damage)
     {
+        if (IsAlive == false) return;
+    
         if (damage<0)
         {
             throw new ArgumentOutOfRangeException(nameof(damage));
         }
+
         _health -= damage;
         Debug.Log("health "+_health);
+
         if (IsAlive == false)
         {
             Dead?.Invoke();
@@ -100,6 +104,8 @@ public class Player : MonoBehaviour
 
     private void Jump()
     {
+
+
         bool onGround = Physics2D.Raycast(transform.position, Vector2.down, _groundLength, _groundLayer);
         if (onGround)
         {
@@ -130,7 +136,7 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-
+        if (IsAlive == false) return;
         _direction = _input.Player.Move.ReadValue<Vector2>();
         Move(_direction.x);
         ClimbLadder(_direction.y);
@@ -140,17 +146,17 @@ public class Player : MonoBehaviour
     {
         _input.Disable();
         _animator.SetTrigger(Dying);
-        _rb.velocity = _deathKick;
+        _rb.AddForce(_deathKick, ForceMode2D.Impulse);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Enemy enemy = collision.gameObject.GetComponent<Enemy>();
+        IDamaging hazard = collision.gameObject.GetComponent<IDamaging>();
 
 
-        if ( enemy!=null)
+        if ( hazard!=null)
         {
-            ApplyDamage(enemy.GetDamage);
+            ApplyDamage(hazard.Damage);
         }
     }
 
@@ -159,5 +165,8 @@ public class Player : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, transform.position+Vector3.down*_groundLength);
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(transform.position, transform.position + (Vector3)_deathKick);
     }
 }

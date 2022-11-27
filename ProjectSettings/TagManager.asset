@@ -16,7 +16,7 @@ TagManager:
   - Player
   - Climbing
   - Background
-  - 
+  - Hazards
   - 
   - 
   - 
@@ -46,6 +46,9 @@ TagManager:
     locked: 0
   - name: Ground
     uniqueID: 1876559003
+    locked: 0
+  - name: Hazards
+    uniqueID: 71167863
     locked: 0
   - name: Ladder
     uniqueID: 2046946351

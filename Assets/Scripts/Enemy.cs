@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, IDamaging
 {
 
     [SerializeField] private float moveSpeed;
@@ -15,7 +15,7 @@ public class Enemy : MonoBehaviour
 
     [SerializeField] private float _damage = 1f;
 
-    public float GetDamage => _damage;
+    public float Damage => _damage;
 
     // Start is called before the first frame update
     void Start()
