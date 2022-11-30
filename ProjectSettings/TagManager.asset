@@ -17,7 +17,7 @@ TagManager:
   - Climbing
   - Background
   - Hazards
-  - 
+  - Interactable
   - 
   - 
   - 
@@ -53,9 +53,15 @@ TagManager:
   - name: Ladder
     uniqueID: 2046946351
     locked: 0
+  - name: Exit
+    uniqueID: 3330752165
+    locked: 0
   - name: Enemy
     uniqueID: 2786060737
     locked: 0
   - name: Player
     uniqueID: 3634373547
+    locked: 0
+  - name: UI
+    uniqueID: 3163894195
     locked: 0
