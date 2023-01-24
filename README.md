@@ -1,6 +1,6 @@
 Learned: 
 
-1.	Tiled Map Editor
+1.	Tilemap Editor
 2.	New Input System
 3.	Pixel art implementation
 4.  Cinemachine!
